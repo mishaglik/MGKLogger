@@ -40,8 +40,8 @@ lib: $(BIN_DIR)/MGKLogger.a
 	cp $(BIN_DIR)/MGKLogger.a $(LIB_DIR)/MGKLogger.a
 	mkdir $(INC_DIR)/
 
-$(BIN_DIR)/MGKLogger.a: $(addprefix $(BIN_DIR), $(filter-out main.o $(OBJ)))
-	ar crf $@ $^
+# $(BIN_DIR)/MGKLogger.a: $(addprefix $(BIN_DIR), $(filter-out main.o $(OBJ)))
+	# ar crf $@ $^
 
 .PHONY: init
 init: 
