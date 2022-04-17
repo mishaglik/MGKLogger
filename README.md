@@ -1,2 +1,2 @@
-# Default project README
-This is default readme. Don't read me!
+# Small logger library.
+    This is small logger class implementation.

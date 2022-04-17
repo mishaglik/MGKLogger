@@ -20,6 +20,7 @@ namespace mgk{
             case Special::Endl:
                 out << "\033[0;m\n";
                 printHeader();
+                for(unsigned i = 0; i < tabs; ++i) out << '\t';
                 break;
             case Special::Time:
                 printTime();
@@ -42,6 +43,7 @@ namespace mgk{
 
 
     Logger::~Logger(){
+        tabs = 0;
         operator<<(CoStyle::Reset);
         out << "\n";
         operator<<(CoStyle::Bold);

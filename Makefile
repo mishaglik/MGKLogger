@@ -36,12 +36,13 @@ TARGETS = main
 main: $(addprefix $(BIN_DIR), $(OBJ))
 	g++ $(CXXFLAGS) $^ $(LXXFLAGS) -o $@
 .PHONY: lib
-lib: $(BIN_DIR)/MGKLogger.a
-	cp $(BIN_DIR)/MGKLogger.a $(LIB_DIR)/MGKLogger.a
-	mkdir $(INC_DIR)/
+lib: $(BIN_DIR)MGKLogger.a
+	cp $(BIN_DIR)MGKLogger.a $(LIB_DIR)MGKLogger.a
+	mkdir $(INC_DIR)MGKLogger -p
+	cp $(SRC_DIR)/MGKLogger.hpp $(INC_DIR)MGKLogger/
 
-# $(BIN_DIR)/MGKLogger.a: $(addprefix $(BIN_DIR), $(filter-out main.o $(OBJ)))
-	# ar crf $@ $^
+$(BIN_DIR)MGKLogger.a: $(addprefix $(BIN_DIR), $(filter-out main.o, $(OBJ)))
+	ar crf $@ $^
 
 .PHONY: init
 init: 

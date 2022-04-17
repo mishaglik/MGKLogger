@@ -1,11 +1,12 @@
 #include "MGKLogger.hpp"
 
-mgk::Logger log;
+mgk::Logger logg;
 using mgk::CoStyle;
 using mgk::ErrLevel;
 
 int main(){
-    log << "Kekw" << mgk::endl;
-    log << CoStyle::Yellow << CoStyle::Bold << "Lol" << mgk::endl;
-    log << ErrLevel::Warning << CoStyle::Bold  << CoStyle::Red << "Warinig" << mgk::endl;
+    logg << "Kekw" << mgk::endl;
+    logg.incTabs();
+    logg << CoStyle::Cyan << CoStyle::Bold << "Lol" << mgk::endl;
+    logg << ErrLevel::Warning << CoStyle::Underline << CoStyle::Bold << CoStyle::Green << "Warinig" << mgk::endl;
 }

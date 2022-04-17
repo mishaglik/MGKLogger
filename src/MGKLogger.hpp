@@ -52,14 +52,15 @@ namespace mgk{
     };
 
     class Logger{
-
-        void printHeader();
-        void printTime();
-
         std::ostream &out = std::cerr;
 
         ErrLevel loglevel = ErrLevel::Info;
         ErrLevel curlevel = ErrLevel::Info;
+
+        unsigned tabs = 0;
+
+        void printHeader();
+        void printTime();
     public:
         enum class Special{
             Endl,
@@ -68,6 +69,9 @@ namespace mgk{
 
         Logger(ErrLevel level = ErrLevel::Info, std::ostream &ostream = std::cerr); 
         ~Logger();
+
+        void incTabs(unsigned x = 1) {tabs += x;}
+        void decTabs(unsigned x = 1) {tabs -= (x < tabs ? x : tabs);}
 
         void setLoglevel(ErrLevel level) {loglevel = level;}
 
