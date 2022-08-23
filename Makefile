@@ -3,9 +3,11 @@ BIN_DIR = bin/
 SRC_DIR = src/
 INC_DIR = ../include/
 
+PROJECT_NAME = "MGKLogger"
+
 MAJOR_VERSION = 0
 MINOR_VERSION = 0
-# BUILD_VERSION = 0			# - Not implementted yet
+BUILD_VERSION = `cat .bld_version`
 
 LIBRARIES = 
 
@@ -17,13 +19,11 @@ LXXFLAGS = -L$(LIB_DIR) $(addprefix -l, $(LIBRARIES))
 
 CXXFLAGS += -DMAJOR_VERSION=$(MAJOR_VERSION)
 CXXFLAGS += -DMINOR_VERSION=$(MINOR_VERSION)
-# CXXFLAGS += -DBUILD_VERSION=$(BUILD_VERSION)
+CXXFLAGS += -DBUILD_VERSION=$(BUILD_VERSION)
 
 CXXFLAGS += $(SANFLAGS)
 
 SUBDIRS = ${shell find $(SRC_DIR) -type d -printf '%P '}
-
-SOURCES =  $(foreach dir, $(SUBDIRS), $(addprefix $(dir)/, $(SOURCES_$(dir))))
 
 SRC = $(shell find $(SRC_DIR) -name *.cpp -printf "%P ")
 
@@ -31,22 +31,34 @@ OBJ = $(SRC:.cpp=.o)
 
 DEP = $(SRC:.cpp=.d)
 
-TARGETS = main
+# Custom part of makefile: targets definiton
+
+TARGETS = main lib
 
 main: $(addprefix $(BIN_DIR), $(OBJ))
-	g++ $(CXXFLAGS) $^ $(LXXFLAGS) -o $@
+	g++ $(CXXFLAGS) $^ $(LXXFLAGS) -o $@\
+
 .PHONY: lib
-lib: $(BIN_DIR)MGKLogger.a
-	cp $(BIN_DIR)MGKLogger.a $(LIB_DIR)MGKLogger.a
-	mkdir $(INC_DIR)MGKLogger -p
-	cp $(SRC_DIR)/MGKLogger.hpp $(INC_DIR)MGKLogger/
+lib: $(LIB_DIR)MGKLogger.so
+	echo "Lib builded"
+
+$(LIB_DIR)MGKLogger.so: $(BIN_DIR)MGKLogger.a
+	mkdir $(LIB_DIR)MGKLogger -p
+	g++ -shared -o $@ $<
+	cp $(SRC_DIR)MGKLogger.hpp $(INC_DIR)MGKLogger/
 
 $(BIN_DIR)MGKLogger.a: $(addprefix $(BIN_DIR), $(filter-out main.o, $(OBJ)))
 	ar crf $@ $^
 
+# Base part of makefile
+
 .PHONY: init
-init: 
-	echo Inited
+init: $(addprefix $(BIN_DIR), $(SUBDIRS)) 
+	echo "Inited project"
+
+.PHONY: deps
+deps: $(addprefix $(BIN_DIR), $(DEP))
+	echo "Deps builded"
 
 $(addprefix $(BIN_DIR), $(SUBDIRS)): % :
 	mkdir -p $@
@@ -54,14 +66,11 @@ $(addprefix $(BIN_DIR), $(SUBDIRS)): % :
 all: $(TARGETS)
 	# ./increaseVersion.sh bld_version
 
-$(BIN_DIR)%.o : $(SRC_DIR)%.cpp
-	g++ -c $(CXXFLAGS) $(LXXFLAGS) -o $@ $<
+$(BIN_DIR)%.o : $(SRC_DIR)%.cpp Makefile build_version
+	g++ -c $(CXXFLAGS) -o $@ $<
 
-.PHONY: deps
-deps: $(addprefix $(BIN_DIR), $(DEP))
-	echo "Deps builded"
-	
-$(BIN_DIR)%.d : $(SRC_DIR)%.cpp Makefile $(BIN_DIR)$(dir %)
+
+$(BIN_DIR)%.d : $(SRC_DIR)%.cpp $(BIN_DIR)$(dir %)
 	g++ -MM -MT $(@:.d=.o) $< -o $@
 
 -include $(addprefix $(BIN_DIR), $(DEP))
@@ -69,4 +78,8 @@ $(BIN_DIR)%.d : $(SRC_DIR)%.cpp Makefile $(BIN_DIR)$(dir %)
 .PHONY: clean
 clean:
 	rm -f $(addprefix $(BIN_DIR), $(OBJ) $(DEP))
-	rm $(TARGETS)
+	rm -f $(TARGETS)
+
+.PHONY: build_version
+build_version:
+	echo $$(( $(BUILD_VERSION) + 1 )) > .bld_version

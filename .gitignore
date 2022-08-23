@@ -57,4 +57,7 @@ lib/
 lib
 include
 log/
+
 main
+
+.bld_version
