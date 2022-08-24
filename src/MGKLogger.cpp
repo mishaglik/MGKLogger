@@ -18,7 +18,13 @@ namespace mgk{
             switch (sp)
             {
             case Special::Endl:
-                out << "\033[0;m\n";
+                out << '\n';
+                out << "                          ";
+                for(unsigned i = 0; i < tabs; ++i) out << '\t';
+                break;
+            case Special::Newl:
+                operator<<(CoStyle::Reset);
+                out << '\n';
                 printHeader();
                 for(unsigned i = 0; i < tabs; ++i) out << '\t';
                 break;
@@ -38,7 +44,6 @@ namespace mgk{
         operator<<(CoStyle::Bold);
         out << "Log started at ";
         printTime();
-        operator<<(endl);
     }
 
 
@@ -51,7 +56,7 @@ namespace mgk{
         printTime();
         out << "\n"
         "Thanks for using MGKLogger (c) Mishaglik 2022\n\n";
-        operator<<(CoStyle::Reset);
+        operator<<(CoStyle::Reset); 
     }
 
     void Logger::printTime(){
@@ -67,7 +72,7 @@ namespace mgk{
 
     Logger& Logger::operator <<(ErrLevel level){
         curlevel = level;
-        operator<<(endl);
+        operator<<(Special::Newl);
         return *this;
     }
 
@@ -80,11 +85,11 @@ namespace mgk{
         switch (curlevel)
         {
         case ErrLevel::Debug:
-            out << "Debug";
+            out << "Debug  ";
             break;
 
         case ErrLevel::Info:
-            out << "Info";
+            out << "Info   ";
             break;
 
         case ErrLevel::Warning:
@@ -94,12 +99,14 @@ namespace mgk{
 
         case ErrLevel::Error:
             operator<<(CoStyle::Red);
-            out << "Error";
+            out << "Error  ";
             break;
 
         case ErrLevel::Fatal:
-            operator<<(CoStyle::Red);
-            out << "Fatal";
+            operator<<(CoStyle::BRed);
+            operator<<(CoStyle::White);
+            operator<<(CoStyle::Bold);
+            out << "Fatal  ";
             break;
 
         default:

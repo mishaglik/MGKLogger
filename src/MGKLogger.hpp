@@ -64,6 +64,7 @@ namespace mgk{
     public:
         enum class Special{
             Endl,
+            Newl,
             Time,
         };
 
